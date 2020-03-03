@@ -1,5 +1,7 @@
 # ziplink.io
 
+Ziplink is a work in progress tool that allows easy file sharing with Sia skynet
+
 ## Project setup
 ```
 npm install

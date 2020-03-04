@@ -2,6 +2,7 @@ import Vue from 'vue';
 import VueRouter from 'vue-router';
 import Home from '@/views/Home.vue';
 import Download from '@/views/Download.vue';
+import NotFoundView from '@/views/NotFoundView.vue';
 
 Vue.use(VueRouter);
 
@@ -16,6 +17,11 @@ const routes = [
     name: 'Download',
     component: Download,
     props: true,
+  },
+  {
+    // not found handler
+    path: '*',
+    component: NotFoundView,
   },
 ];
 

@@ -1,7 +1,6 @@
 <template>
-  <div>
-    <section>
-      <div class="container mt-30">
+  <div class="container">
+    <section class="text-center  mt-30">
         <b-card>
           <h1 class="jumbotron-heading text-center">Free 'n' Easy file sharing</h1>
           <p class="lead text-muted text-center">Upload a file 'n' share the link.</p>
@@ -17,27 +16,24 @@
             @input="onUpload()"
           ></b-form-file>
         </b-card>
-      </div>
     </section>
-    <section v-if="skylink !== ''">
-      <div class="container mt-20">
-        <b-card title="Here's your link" class="text-center">
-          <b-card-text>
-            <router-link :to="{name: 'Download', params: { skylink: skylink}}">{{getSkylinkUrl}}</router-link>
-          </b-card-text>
+    <section v-if="skylink !== ''" class="mt-20">
+      <b-card title="Here's your link" class="text-center">
+        <b-card-text>
+          <router-link :to="{name: 'Download', params: { skylink: skylink}}">{{getSkylinkUrl}}</router-link>
+        </b-card-text>
 
-          <button
-            class="btn btn-link card-link"
-            v-clipboard:copy="getSkylinkUrl"
-            v-clipboard:success="onCopy"
-            v-clipboard:error="onError"
-          >Copy link</button>
-          <a
-            class="btn btn-link card-link"
-            :href="`mailto:?&subject=ziplink.io%20file%20sharing.&body=Hi%20I%20wanted%20to%20share%20this%20file%20with%20you%20${encodeURI(getSkylinkUrl)}`"
-          >Share link</a>
-        </b-card>
-      </div>
+        <button
+          class="btn btn-link card-link"
+          v-clipboard:copy="getSkylinkUrl"
+          v-clipboard:success="onCopy"
+          v-clipboard:error="onError"
+        >Copy link</button>
+        <a
+          class="btn btn-link card-link"
+          :href="`mailto:?&subject=ziplink.io%20file%20sharing.&body=Hi%20I%20wanted%20to%20share%20this%20file%20with%20you%20${encodeURI(getSkylinkUrl)}`"
+        >Share link</a>
+      </b-card>
     </section>
   </div>
 </template>

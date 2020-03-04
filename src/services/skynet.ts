@@ -21,8 +21,6 @@ class SkynetClient {
   private SKYNET_FILE_META_HEADER = 'skynet-file-metadata';
 
   async uploadFile(file: File) {
-    console.debug('Upload File');
-
     try {
       const data = new FormData();
       data.append(this.PORTAL_FILE_FIELD_NAME, file);
@@ -35,8 +33,6 @@ class SkynetClient {
 
       return await response.json();
     } catch (error) {
-      console.debug(file, 'error');
-
       throw error;
     }
   }
@@ -58,8 +54,6 @@ class SkynetClient {
 
       return { meta, data };
     } catch (error) {
-      console.info(error);
-
       throw error;
     }
   }

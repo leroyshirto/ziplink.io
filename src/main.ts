@@ -2,6 +2,8 @@ import '@babel/polyfill';
 import 'mutationobserver-shim';
 import Vue from 'vue';
 import './plugins/bootstrap-vue';
+import './plugins/vue-clipboard';
+import './plugins/vue-sweetalert';
 import App from './App.vue';
 import './registerServiceWorker';
 import router from './router';

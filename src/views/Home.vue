@@ -3,9 +3,7 @@
     <section class="jumbotron text-center">
       <div class="container">
         <h1 class="jumbotron-heading">Free 'n' Easy file sharing</h1>
-        <p class="lead text-muted">
-          Upload a file 'n' share the link.
-        </p>
+        <p class="lead text-muted">Upload a file 'n' share the link.</p>
       </div>
     </section>
     <section>
@@ -25,16 +23,22 @@
     </section>
     <section v-if="skylink !== ''">
       <div class="container mt-20">
-      <b-card title="Here's your link" class="text-center">
-        <b-card-text>
-          <router-link :to="{name: 'Download', params: { skylink: skylink.skylink}}">
-            {{getSkylinkUrl(skylink.skylink)}}
-          </router-link>
-        </b-card-text>
+        <b-card title="Here's your link" class="text-center">
+          <b-card-text>
+            <router-link :to="{name: 'Download', params: { skylink: skylink}}">{{getSkylinkUrl}}</router-link>
+          </b-card-text>
 
-        <a href="#" class="card-link">Copy link</a>
-        <a href="#" class="card-link">Share link</a>
-      </b-card>
+          <button
+            class="btn btn-link card-link"
+            v-clipboard:copy="getSkylinkUrl"
+            v-clipboard:success="onCopy"
+            v-clipboard:error="onError"
+          >Copy link</button>
+          <a
+            class="btn btn-link card-link"
+            :href="`mailto:?&subject=ziplink.io%20file%20sharing.&body=Hi%20I%20wanted%20to%20share%20this%20file%20with%20you%20${encodeURI(getSkylinkUrl)}`"
+          >Share link</a>
+        </b-card>
       </div>
     </section>
   </div>
@@ -44,13 +48,21 @@
 import { Component, Vue } from 'vue-property-decorator';
 import getClient from '@/services/skynet';
 
-@Component({ components: { } })
+@Component({ components: {} })
 export default class Home extends Vue {
   private loading = false;
 
   private fileToUpload: File | null = null;
 
   private skylink = '';
+
+  get getSkylinkUrl(): string {
+    const { port } = window.location;
+    if (port === '80' || port === '443') {
+      return `${window.location.protocol}//${window.location.hostname}#/download/${this.skylink}`;
+    }
+    return `${window.location.protocol}//${window.location.hostname}:${port}#/download/${this.skylink}`;
+  }
 
   async onUpload() {
     if (this.fileToUpload === null || this.fileToUpload === undefined) {
@@ -62,19 +74,28 @@ export default class Home extends Vue {
     const response = await client.uploadFile(this.fileToUpload);
     console.debug(response);
 
-    this.skylink = response;
+    this.skylink = response.skylink;
     this.loading = false;
   }
 
-  getSkylinkUrl(skylink: string): string {
-    console.log(this.$router.currentRoute);
-    return `${window.location.protocol}//${window.location.hostname}#/download/${skylink}`;
+  onCopy() {
+    this.$swal({
+      position: 'top-end',
+      icon: 'success',
+      title: 'Copied to clipboard',
+      showConfirmButton: false,
+      timer: 1500,
+    });
+  }
+
+  onError() {
+    this.$swal('Error Copying data');
   }
 }
 </script>
 
 <style scoped lang="scss">
-  .mt-20 {
-    margin-top: 20px;
-  }
+.mt-20 {
+  margin-top: 20px;
+}
 </style>

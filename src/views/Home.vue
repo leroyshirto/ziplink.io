@@ -58,7 +58,7 @@ export default class Home extends Vue {
 
   get getSkylinkUrl(): string {
     const { port } = window.location;
-    if (port === '80' || port === '443') {
+    if (['80', '443', ''].includes(port)) {
       return `${window.location.protocol}//${window.location.hostname}#/download/${this.skylink}`;
     }
     return `${window.location.protocol}//${window.location.hostname}:${port}#/download/${this.skylink}`;

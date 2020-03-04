@@ -1,24 +1,22 @@
 <template>
   <div>
-    <section class="jumbotron text-center">
-      <div class="container">
-        <h1 class="jumbotron-heading">Free 'n' Easy file sharing</h1>
-        <p class="lead text-muted">Upload a file 'n' share the link.</p>
-      </div>
-    </section>
     <section>
-      <div class="container">
-        <div v-show="loading" class="text-center">
-          <b-spinner variant="primary" label="Spinning"></b-spinner>
-        </div>
-        <b-form-file
-          v-show="!loading"
-          v-model="fileToUpload"
-          size="lg"
-          placeholder="Choose a file or drop it here..."
-          drop-placeholder="Drop file here..."
-          @input="onUpload()"
-        ></b-form-file>
+      <div class="container mt-30">
+        <b-card>
+          <h1 class="jumbotron-heading text-center">Free 'n' Easy file sharing</h1>
+          <p class="lead text-muted text-center">Upload a file 'n' share the link.</p>
+          <div v-show="loading" class="text-center">
+            <b-spinner variant="primary" label="Spinning"></b-spinner>
+          </div>
+          <b-form-file
+            v-show="!loading"
+            v-model="fileToUpload"
+            size="lg"
+            placeholder="Choose a file or drop it here..."
+            drop-placeholder="Drop file here..."
+            @input="onUpload()"
+          ></b-form-file>
+        </b-card>
       </div>
     </section>
     <section v-if="skylink !== ''">
@@ -96,5 +94,20 @@ export default class Home extends Vue {
 <style scoped lang="scss">
 .mt-20 {
   margin-top: 20px;
+}
+
+.mt-30 {
+  margin-top: 30px;
+}
+
+.card {
+  background: #fff;
+  border: none;
+  box-shadow: 0px 5px 42px 0px rgba(35, 70, 107, 0.08);
+  border-radius: 0.8rem;
+}
+
+.card:hover {
+  box-shadow: 0px 25px 42px 0px rgba(35, 70, 107, 0.24);
 }
 </style>

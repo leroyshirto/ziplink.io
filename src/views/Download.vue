@@ -26,7 +26,7 @@ export default class Home extends Vue {
     const { skylink } = this.$route.params;
     if (skylink === null || skylink === undefined) {
       // TODO: handle the unhappy case if we have no link
-      console.log('Cloud not find skylink');
+      this.$swal('Cloud not find skylink');
     }
 
     this.downloadedFile = await this.fetchLink(skylink);

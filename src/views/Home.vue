@@ -72,7 +72,6 @@ export default class Home extends Vue {
     this.loading = true;
     const client = getClient();
     const response = await client.uploadFile(this.fileToUpload);
-    console.debug(response);
 
     this.skylink = response.skylink;
     this.loading = false;

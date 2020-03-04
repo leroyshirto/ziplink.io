@@ -21,7 +21,7 @@ export class SkynetClient {
 
   private SKYNET_FILE_META_HEADER = 'skynet-file-metadata';
 
-  static SKYNET_DOWNLOAD_PROGRESS_EVENT = 'skynet-download-progress'
+  static SKYNET_DOWNLOAD_PROGRESS_EVENT = 'skynet-download-progress';
 
   async uploadFile(file: File) {
     const data = new FormData();
@@ -45,6 +45,20 @@ export class SkynetClient {
     // );
 
     return response.json();
+  }
+
+  async fetchLink(skylink: string) {
+    const response = await axios.request(
+      {
+        method: 'get',
+        url: `${this.PORTAL_URL}/${skylink}`,
+        headers: { Range: 'bytes=0-0' }, // We only want the response header
+        responseType: 'blob', // important
+      },
+    );
+
+    debugger;
+    return response.data;
   }
 
   async downloadFile(skylink: string) {
@@ -78,6 +92,4 @@ export class SkynetClient {
   }
 }
 
-export default function client() {
-  return new SkynetClient();
-}
+export default new SkynetClient();

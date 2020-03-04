@@ -40,7 +40,7 @@
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
-import getClient from '@/services/skynet';
+import skynet from '@/services/skynet';
 
 @Component({ components: {} })
 export default class Home extends Vue {
@@ -59,13 +59,12 @@ export default class Home extends Vue {
   }
 
   async onUpload() {
-    if (this.fileToUpload === null || this.fileToUpload === undefined) {
+    if (this.fileToUpload === null) {
       return;
     }
 
     this.loading = true;
-    const client = getClient();
-    const response = await client.uploadFile(this.fileToUpload);
+    const response = await skynet.uploadFile(this.fileToUpload);
 
     this.skylink = response.skylink;
     this.loading = false;
@@ -99,11 +98,11 @@ export default class Home extends Vue {
 .card {
   background: #fff;
   border: none;
-  box-shadow: 0px 5px 42px 0px rgba(35, 70, 107, 0.08);
+  box-shadow: 0 5px 42px 0 rgba(35, 70, 107, 0.08);
   border-radius: 0.8rem;
 }
 
 .card:hover {
-  box-shadow: 0px 25px 42px 0px rgba(35, 70, 107, 0.24);
+  box-shadow: 0 25px 42px 0 rgba(35, 70, 107, 0.24);
 }
 </style>

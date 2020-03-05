@@ -74,18 +74,5 @@ export default class Home extends Vue {
 </script>
 
 <style scoped lang="scss">
-.mt-20 {
-  margin-top: 20px;
-}
 
-.mt-30 {
-  margin-top: 30px;
-}
-
-.card {
-  background: #fff;
-  border: none;
-  box-shadow: 0 5px 42px 0 rgba(35, 70, 107, 0.08);
-  border-radius: 0.8rem;
-}
 </style>

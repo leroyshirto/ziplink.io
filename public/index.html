@@ -8,16 +8,6 @@
     <title><%= htmlWebpackPlugin.options.title %></title>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@mdi/font@latest/css/materialdesignicons.min.css">
-    <script type="text/javascript">
-      if(window.navigator && navigator.serviceWorker) {
-        navigator.serviceWorker.getRegistrations()
-          .then(function(registrations) {
-            for(let registration of registrations) {
-              registration.unregister();
-            }
-          });
-      }
-    </script>
   </head>
   <body>
     <noscript>

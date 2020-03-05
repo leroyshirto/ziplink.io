@@ -14,27 +14,32 @@
     </section>
 
     <b-loading :active.sync="loading"></b-loading>
+
     <section v-if="skylink === ''" class="section has-text-centered">
-      <div class="card" v-show="!loading">
-        <div class="card-content">
-          <b-field>
-            <b-upload
-              v-model="fileToUpload"
-              drag-drop
-              @input="onUpload()">
-              <section class="section">
-                <div class="content has-text-centered">
-                  <p>
-                    <b-icon
-                      icon="upload"
-                      size="is-large">
-                    </b-icon>
-                  </p>
-                  <p>Drop your files here or click to upload</p>
-                </div>
-              </section>
-            </b-upload>
-          </b-field>
+      <div class="columns is-centered">
+        <div class="column is-one-third">
+          <div class="card" v-show="!loading">
+            <div class="card-content">
+              <b-field>
+                <b-upload
+                  v-model="fileToUpload"
+                  drag-drop
+                  @input="onUpload()">
+                  <section class="section">
+                    <div class="content has-text-centered">
+                      <p>
+                        <b-icon
+                          icon="upload"
+                          size="is-large">
+                        </b-icon>
+                      </p>
+                      <p>Drop your files here or click to upload</p>
+                    </div>
+                  </section>
+                </b-upload>
+              </b-field>
+            </div>
+          </div>
         </div>
       </div>
     </section>
@@ -47,13 +52,13 @@
           </p>
           <p class="subtitle has-text-centered">
             <router-link :to="{name: 'Download', params: { skylink: skylink}}">
-              {{getSkylinkUrl}}
+              {{ getSkylinkUrl(skylink) }}
             </router-link>
           </p>
         </div>
         <footer class="card-footer mt-30">
           <a class="card-footer-item"
-            v-clipboard:copy="getSkylinkUrl"
+            v-clipboard:copy="getSkylinkUrl(skylink)"
             v-clipboard:success="onCopy"
             v-clipboard:error="onError"
           >Copy link</a>
@@ -67,24 +72,19 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue } from 'vue-property-decorator';
+import { Component } from 'vue-property-decorator';
+import { mixins } from 'vue-class-component';
+import SkylinkUtil from '@/mixins/skylinkUtil';
 import skynet from '@/services/skynet';
+import LinkHistoryItem from '@/services/linkHistory/linkHistoryItem';
 
-  @Component({ components: {} })
-export default class Home extends Vue {
+@Component({ components: {} })
+export default class Home extends mixins(SkylinkUtil) {
     private loading = false;
 
     private fileToUpload: File | null = null;
 
     private skylink = '';
-
-    get getSkylinkUrl(): string {
-      const { port } = window.location;
-      if (['80', '443', ''].includes(port)) {
-        return `${window.location.protocol}//${window.location.hostname}#/download/${this.skylink}`;
-      }
-      return `${window.location.protocol}//${window.location.hostname}:${port}#/download/${this.skylink}`;
-    }
 
     async onUpload() {
       if (this.fileToUpload === null) {
@@ -95,6 +95,11 @@ export default class Home extends Vue {
       const response = await skynet.uploadFile(this.fileToUpload);
 
       this.skylink = response.skylink;
+      await this.$store.dispatch(
+        'addItemToHistory',
+        LinkHistoryItem.createForUpload(this.skylink),
+      );
+
       this.loading = false;
     }
 
@@ -115,5 +120,7 @@ export default class Home extends Vue {
 </script>
 
 <style scoped lang="scss">
-
+.upload-card {
+  max-width: 400px;
+}
 </style>

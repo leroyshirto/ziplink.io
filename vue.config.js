@@ -7,6 +7,10 @@ module.exports = {
     msTileColor: '#2c363e',
     appleMobileWebAppCapable: 'yes',
     appleMobileWebAppStatusBarStyle: 'black',
+    workboxOptions: {
+      skipWaiting: true,
+      clientsClaim: true,
+    },
     manifestOptions: {
       short_name: 'Ziplink',
       background_color: '#254C4F',

@@ -6,6 +6,11 @@
           <strong>Ziplink.io</strong>
         </b-navbar-item>
       </template>
+      <template slot="end">
+        <b-navbar-item tag="router-link" :to="{ name: 'History' }">
+          Link History
+        </b-navbar-item>
+      </template>
     </b-navbar>
 
     <transition name="fade">

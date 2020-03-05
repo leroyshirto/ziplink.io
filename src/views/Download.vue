@@ -1,6 +1,8 @@
 <template>
   <section class="section">
-    <div class="card">
+    <div class="columns is-centered">
+      <div class="column is-three-fifths">
+        <div class="card">
       <div class="card-content has-text-centered">
       <div v-show="loading">
         <h5>Loading file...</h5>
@@ -21,12 +23,15 @@
       </div>
       </div>
     </div>
+      </div>
+    </div>
   </section>
 </template>
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
 import skynet, { SkynetFile, SkynetClient } from '@/services/skynet';
+import LinkHistoryItem from '@/services/linkHistory/linkHistoryItem';
 
 @Component({ components: {} })
 export default class Home extends Vue {
@@ -56,6 +61,11 @@ export default class Home extends Vue {
 
   async downloadFile(skylink: string) {
     const response = await skynet.downloadFile(skylink);
+
+    await this.$store.dispatch(
+      'addItemToHistory',
+      LinkHistoryItem.createForDownload(skylink),
+    );
 
     this.loading = false;
 

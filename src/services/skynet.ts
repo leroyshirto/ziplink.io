@@ -57,7 +57,6 @@ export class SkynetClient {
       },
     );
 
-    debugger;
     return response.data;
   }
 

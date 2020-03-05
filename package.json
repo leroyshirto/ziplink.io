@@ -10,8 +10,7 @@
   "dependencies": {
     "@babel/polyfill": "^7.7.0",
     "axios": "^0.19.2",
-    "bootstrap": "^4.3.1",
-    "bootstrap-vue": "^2.1.0",
+    "buefy": "^0.8.12",
     "core-js": "^3.6.4",
     "mutationobserver-shim": "^0.3.3",
     "register-service-worker": "^1.6.2",
@@ -42,7 +41,7 @@
     "sass": "^1.19.0",
     "sass-loader": "^8.0.0",
     "typescript": "~3.7.5",
-    "vue-cli-plugin-bootstrap-vue": "^0.6.0",
+    "vue-cli-plugin-buefy": "^0.3.7",
     "vue-template-compiler": "^2.6.11"
   }
 }

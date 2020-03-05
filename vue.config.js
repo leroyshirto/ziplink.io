@@ -9,7 +9,7 @@ module.exports = {
     appleMobileWebAppStatusBarStyle: 'black',
     manifestOptions: {
       short_name: 'Ziplink',
-      background_color: '#2c363e',
+      background_color: '#254C4F',
       display: 'standalone',
       orientation: 'portrait',
       scope: '/',

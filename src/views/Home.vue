@@ -1,39 +1,67 @@
 <template>
-  <div class="container">
-    <section class="text-center  mt-30">
-        <b-card>
-          <h1 class="jumbotron-heading text-center">Free 'n' Easy file sharing</h1>
-          <p class="lead text-muted text-center">Upload a file 'n' share the link.</p>
-          <div v-show="loading" class="text-center">
-            <b-spinner variant="primary" label="Spinning"></b-spinner>
-          </div>
-          <b-form-file
-            v-show="!loading"
-            v-model="fileToUpload"
-            size="lg"
-            placeholder="Choose a file or drop it here..."
-            drop-placeholder="Drop file here..."
-            @input="onUpload()"
-          ></b-form-file>
-        </b-card>
+  <div>
+    <section class="hero has-background-white">
+      <div class="hero-body">
+        <div class="container">
+          <h1 class="title has-text-centered">
+            Free 'n' Easy file sharing
+          </h1>
+          <h2 class="subtitle has-text-centered">
+            Upload a file 'n' share the link.
+          </h2>
+        </div>
+      </div>
     </section>
-    <section v-if="skylink !== ''" class="mt-20">
-      <b-card title="Here's your link" class="text-center">
-        <b-card-text>
-          <router-link :to="{name: 'Download', params: { skylink: skylink}}">{{getSkylinkUrl}}</router-link>
-        </b-card-text>
 
-        <button
-          class="btn btn-link card-link"
-          v-clipboard:copy="getSkylinkUrl"
-          v-clipboard:success="onCopy"
-          v-clipboard:error="onError"
-        >Copy link</button>
-        <a
-          class="btn btn-link card-link"
-          :href="`mailto:?&subject=ziplink.io%20file%20sharing.&body=Hi%20I%20wanted%20to%20share%20this%20file%20with%20you%20${encodeURI(getSkylinkUrl)}`"
-        >Share link</a>
-      </b-card>
+    <b-loading :active.sync="loading"></b-loading>
+    <section v-if="skylink === ''" class="section has-text-centered">
+      <div class="card" v-show="!loading">
+        <div class="card-content">
+          <b-field>
+            <b-upload
+              v-model="fileToUpload"
+              drag-drop
+              @input="onUpload()">
+              <section class="section">
+                <div class="content has-text-centered">
+                  <p>
+                    <b-icon
+                      icon="upload"
+                      size="is-large">
+                    </b-icon>
+                  </p>
+                  <p>Drop your files here or click to upload</p>
+                </div>
+              </section>
+            </b-upload>
+          </b-field>
+        </div>
+      </div>
+    </section>
+
+    <section v-if="skylink !== ''" class="section mt-20">
+      <div class="card">
+        <div class="card-content">
+          <p class="title has-text-centered">
+            Here's your link
+          </p>
+          <p class="subtitle has-text-centered">
+            <router-link :to="{name: 'Download', params: { skylink: skylink}}">
+              {{getSkylinkUrl}}
+            </router-link>
+          </p>
+        </div>
+        <footer class="card-footer mt-30">
+          <a class="card-footer-item"
+            v-clipboard:copy="getSkylinkUrl"
+            v-clipboard:success="onCopy"
+            v-clipboard:error="onError"
+          >Copy link</a>
+          <a class="card-footer-item"
+            :href="`mailto:?&subject=ziplink.io%20file%20sharing.&body=Hi%20I%20wanted%20to%20share%20this%20file%20with%20you%20${encodeURI(getSkylinkUrl)}`"
+          >Share link</a>
+        </footer>
+      </div>
     </section>
   </div>
 </template>
@@ -42,67 +70,75 @@
 import { Component, Vue } from 'vue-property-decorator';
 import skynet from '@/services/skynet';
 
-@Component({ components: {} })
+  @Component({ components: {} })
 export default class Home extends Vue {
-  private loading = false;
+    private loading = false;
 
-  private fileToUpload: File | null = null;
+    private fileToUpload: File | null = null;
 
-  private skylink = '';
+    private skylink = '';
 
-  get getSkylinkUrl(): string {
-    const { port } = window.location;
-    if (['80', '443', ''].includes(port)) {
-      return `${window.location.protocol}//${window.location.hostname}#/download/${this.skylink}`;
-    }
-    return `${window.location.protocol}//${window.location.hostname}:${port}#/download/${this.skylink}`;
-  }
-
-  async onUpload() {
-    if (this.fileToUpload === null) {
-      return;
+    get getSkylinkUrl(): string {
+      const { port } = window.location;
+      if (['80', '443', ''].includes(port)) {
+        return `${window.location.protocol}//${window.location.hostname}#/download/${this.skylink}`;
+      }
+      return `${window.location.protocol}//${window.location.hostname}:${port}#/download/${this.skylink}`;
     }
 
-    this.loading = true;
-    const response = await skynet.uploadFile(this.fileToUpload);
+    async onUpload() {
+      if (this.fileToUpload === null) {
+        return;
+      }
 
-    this.skylink = response.skylink;
-    this.loading = false;
-  }
+      this.loading = true;
+      const response = await skynet.uploadFile(this.fileToUpload);
 
-  onCopy() {
-    this.$swal({
-      position: 'top-end',
-      icon: 'success',
-      title: 'Copied to clipboard',
-      showConfirmButton: false,
-      timer: 1500,
-    });
-  }
+      this.skylink = response.skylink;
+      this.loading = false;
+    }
 
-  onError() {
-    this.$swal('Error Copying data');
-  }
+    onCopy() {
+      this.$swal({
+        position: 'top-end',
+        icon: 'success',
+        title: 'Copied to clipboard',
+        showConfirmButton: false,
+        timer: 1500,
+      });
+    }
+
+    onError() {
+      this.$swal('Error Copying data');
+    }
 }
 </script>
 
 <style scoped lang="scss">
-.mt-20 {
-  margin-top: 20px;
-}
+  .mt-20 {
+    margin-top: 20px;
+  }
 
-.mt-30 {
-  margin-top: 30px;
-}
+  .pt-20 {
+    padding-top: 20px;
+  }
 
-.card {
-  background: #fff;
-  border: none;
-  box-shadow: 0 5px 42px 0 rgba(35, 70, 107, 0.08);
-  border-radius: 0.8rem;
-}
+  .mt-30 {
+    margin-top: 30px;
+  }
 
-.card:hover {
-  box-shadow: 0 25px 42px 0 rgba(35, 70, 107, 0.24);
-}
+  .mb-30 {
+    margin-bottom: 30px;
+  }
+
+  .card {
+    background: #fff;
+    border: none;
+    box-shadow: 0 5px 42px 0 rgba(35, 70, 107, 0.08);
+    border-radius: 0.8rem;
+  }
+
+  /*.card:hover {*/
+  /*  box-shadow: 0 25px 42px 0 rgba(35, 70, 107, 0.24);*/
+  /*}*/
 </style>

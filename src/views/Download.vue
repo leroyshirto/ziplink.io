@@ -1,19 +1,26 @@
 <template>
-  <section class="container text-center  mt-30">
-    <b-card>
+  <section class="section">
+    <div class="card">
+      <div class="card-content has-text-centered">
       <div v-show="loading">
         <h5>Loading file...</h5>
         <b-progress
           :value="downloadProgress.loaded"
           :max="downloadProgress.total"
-          show-progress animated>
+          size="is-large"
+          type="is-primary"
+          show-value>
         </b-progress>
       </div>
       <div class="mt-30" v-if="downloadedFile !== null || downloadedFile !== undefined">
         <p v-if="downloadedFile !== null">This file is: {{downloadedFile.meta.filename}}</p>
-        <b-btn @click="forceFileDownload(downloadedFile)">Download</b-btn>
+        <b-button
+          type="is-primary"
+          outlined
+          @click="forceFileDownload(downloadedFile)">Download</b-button>
       </div>
-    </b-card>
+      </div>
+    </div>
   </section>
 </template>
 
@@ -80,9 +87,5 @@ export default class Home extends Vue {
   border: none;
   box-shadow: 0 5px 42px 0 rgba(35, 70, 107, 0.08);
   border-radius: 0.8rem;
-}
-
-.card:hover {
-  box-shadow: 0 25px 42px 0 rgba(35, 70, 107, 0.24);
 }
 </style>

@@ -27,7 +27,7 @@ module.exports = {
         params: {
           files: [
             {
-              name: 'files',
+              name: 'file',
               accept: '*/*',
             },
           ],

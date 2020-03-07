@@ -18,7 +18,7 @@ const notifyUserAboutAnUpdate = (worker: ServiceWorker | null) => {
   });
 };
 
-if (process.env.NODE_ENV === 'production' || process.env.NODE_ENV === 'develop') {
+if (process.env.NODE_ENV === 'production') {
   register(`${process.env.BASE_URL}service-worker.js`, {
     ready() {
       console.log(

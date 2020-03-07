@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="app">
     <b-navbar>
       <template slot="brand">
         <b-navbar-item tag="router-link" :to="{ name: 'Home' }">
@@ -16,7 +16,7 @@
     <transition name="fade">
       <router-view :key="$route.fullPath"></router-view>
     </transition>
-    <footer class="page-footer">
+    <footer class="app-footer">
       <div class="content has-text-centered">
         <p class="has-text-white">
           <strong class="ziplink">Ziplink.io</strong> powered by Skynet
@@ -42,14 +42,14 @@ html {
   background-size: cover;
 }
 
-#app {
+.app {
   min-height: 100vh;
   overflow: hidden;
   display: block;
   position: relative;
   padding-bottom: 60px; /* height of your footer */
 }
-.page-footer {
+.app-footer {
   position: absolute;
   bottom: 0;
   width: 100%;

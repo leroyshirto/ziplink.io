@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/camelcase */
 
 module.exports = {
+  chainWebpack: (config) => config.optimization.minimize(false),
   pwa: {
     name: 'Ziplink.io',
     themeColor: '#23c0cf',
@@ -19,6 +20,19 @@ module.exports = {
       orientation: 'portrait',
       scope: '/',
       start_url: '/',
+      share_target: {
+        action: '/#/?upload',
+        method: 'POST',
+        enctype: 'multipart/form-data',
+        params: {
+          files: [
+            {
+              name: 'files',
+              accept: '*/*',
+            },
+          ],
+        },
+      },
     },
   },
 };

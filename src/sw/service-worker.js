@@ -15,3 +15,17 @@ self.addEventListener('message', (msg) => {
     self.skipWaiting();
   }
 });
+
+// Handle web share
+self.addEventListener('fetch', (event) => {
+  const url = new URL(event.request.url);
+
+  if (
+    url.origin === location.origin
+    && url.pathname === '/#/?upload'
+    && event.request.method === 'POST'
+  ) {
+    serveShareTarget(event);
+  }
+  console.log(url.pathname);
+});

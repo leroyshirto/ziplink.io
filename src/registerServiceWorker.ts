@@ -58,4 +58,9 @@ if (process.env.NODE_ENV === 'production' || process.env.NODE_ENV === 'develop')
     window.location.reload();
     refreshing = true;
   });
+
+  navigator.serviceWorker.addEventListener('load-image', (event: Event) => {
+    Snackbar.open('Received Share target');
+    console.log(event);
+  });
 }

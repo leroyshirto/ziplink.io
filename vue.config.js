@@ -7,9 +7,10 @@ module.exports = {
     msTileColor: '#2c363e',
     appleMobileWebAppCapable: 'yes',
     appleMobileWebAppStatusBarStyle: 'black',
+    workboxPluginMode: 'InjectManifest',
     workboxOptions: {
-      skipWaiting: true,
-      clientsClaim: true,
+      // swSrc is required in InjectManifest mode.
+      swSrc: 'src/sw/service-worker.js',
     },
     manifestOptions: {
       short_name: 'Ziplink',

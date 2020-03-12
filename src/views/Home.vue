@@ -63,6 +63,11 @@
             v-clipboard:error="onError"
           >Copy link</a>
           <a class="card-footer-item"
+             v-if="hasWebShare"
+             @click="doWebShare()"
+          >Share link</a>
+          <a class="card-footer-item"
+             v-else
             :href="`mailto:?&subject=ziplink.io%20file%20sharing.&body=Hi%20I%20wanted%20to%20share%20this%20file%20with%20you%20${encodeURI(getSkylinkUrl)}`"
           >Share link</a>
         </footer>
@@ -85,6 +90,10 @@ export default class Home extends mixins(SkylinkUtil) {
     private fileToUpload: File | null = null;
 
     private skylink = '';
+
+    get hasWebShare() {
+      return navigator.canShare;
+    }
 
     async onUpload() {
       if (this.fileToUpload === null) {
@@ -115,6 +124,18 @@ export default class Home extends mixins(SkylinkUtil) {
 
     onError() {
       this.$swal('Error Copying data');
+    }
+
+    doWebShare() {
+      if (navigator.share) {
+        navigator.share({
+          title: 'ziplink.io',
+          text: 'Check out this file',
+          url: this.getSkylinkUrl(this.skylink),
+        })
+          .then(() => console.log('Successful share'))
+          .catch((error: Error) => console.log('Error sharing', error));
+      }
     }
 }
 </script>

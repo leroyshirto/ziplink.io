@@ -133,8 +133,8 @@ export default class Home extends mixins(SkylinkUtil) {
           text: 'Check out this file',
           url: this.getSkylinkUrl(this.skylink),
         })
-          .then(() => console.log('Successful share'))
-          .catch((error: Error) => console.log('Error sharing', error));
+          .then(() => this.$swal('Link shared'))
+          .catch((error: Error) => this.$swal(`Error sharing: ${error}`));
       }
     }
 }

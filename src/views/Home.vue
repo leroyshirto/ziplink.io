@@ -111,7 +111,7 @@
       <div class="hero-body">
         <div class="container">
           <h1 class="title has-text-centered">
-            Upload another file?
+            Do another Upload?
           </h1>
           <h2 class="subtitle has-text-centered">
             <b-button @click="resetUpload()">Upload</b-button>

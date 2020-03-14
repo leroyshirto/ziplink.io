@@ -1,5 +1,5 @@
 /* eslint-disable no-restricted-globals,no-underscore-dangle */
-
+import { serveShareTarget } from './util';
 /**
  * The workboxSW.precacheAndRoute() method efficiently caches and responds to
  * requests for URLs in the manifest.

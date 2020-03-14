@@ -5,14 +5,16 @@
         <div class="card">
       <div class="card-content has-text-centered">
       <div v-show="loading">
-        <h5>Loading file...</h5>
+        <h5>Downloading from <a :href="defaultPortalUrl">{{ defaultPortalUrl }}</a></h5>
         <b-progress
-          :value="downloadProgress.loaded"
-          :max="downloadProgress.total"
+          :value="transferProgress.loaded"
+          :max="transferProgress.total"
           size="is-large"
           type="is-primary"
           show-value>
+          {{humanFileSize(transferProgress.loaded)}}
         </b-progress>
+        <p>Size: {{humanFileSize(transferProgress.total)}} - Downloading at: {{humanFileSize(transferProgress.speed)}}/sec</p>
       </div>
       <div class="mt-30" v-if="downloadedFile !== null || downloadedFile !== undefined">
         <p v-if="downloadedFile !== null">This file is: {{downloadedFile.meta.filename}}</p>
@@ -29,20 +31,21 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue } from 'vue-property-decorator';
+import { Component } from 'vue-property-decorator';
+import { mixins } from 'vue-class-component';
+import SkylinkUtil from '@/mixins/skylinkUtil';
 import skynet, { SkynetFile, SkynetClient } from '@/services/skynet';
 import LinkHistoryItem from '@/services/linkHistory/linkHistoryItem';
 
-@Component({ components: {} })
-export default class Home extends Vue {
+@Component
+export default class Home extends mixins(SkylinkUtil) {
   private loading = true;
 
-  private downloadProgress = {
-    loaded: 0,
-    total: 0,
-  };
-
   private downloadedFile: SkynetFile | null = null;
+
+  get defaultPortalUrl() {
+    return skynet.defaultPortalUrl;
+  }
 
   async created() {
     const { skylink } = this.$route.params;
@@ -58,14 +61,15 @@ export default class Home extends Vue {
 
     window.addEventListener(SkynetClient.SKYNET_DOWNLOAD_PROGRESS_EVENT, (e: Event) => {
       const downloadStatsEvent = e as CustomEvent;
-      this.downloadProgress.loaded = downloadStatsEvent.detail.loaded;
-      this.downloadProgress.total = downloadStatsEvent.detail.total;
+      this.transferProgress.loaded = downloadStatsEvent.detail.loaded;
+      this.transferProgress.total = downloadStatsEvent.detail.total;
+      this.calculateSpeed();
     });
     this.downloadedFile = await this.downloadFile(skylink);
   }
 
   async downloadFile(skylink: string) {
-    const response = await skynet.downloadFile(skylink, skynet.defaultPortalUrl);
+    const response = await skynet.downloadFile(skylink, this.defaultPortalUrl);
 
     await this.$store.dispatch(
       'addItemToHistory',

@@ -13,20 +13,21 @@
       </div>
     </section>
 
-<!--    <b-loading :active.sync="loading"></b-loading>-->
     <section v-if="loading" class="section">
       <div class="columns is-centered">
         <div class="column is-three-fifths">
           <div class="card">
             <div class="card-content has-text-centered">
-              <h5>Uploading file through <a :href="selectedPortal">{{ selectedPortal }}</a></h5>
+              <h5>Uploading through <a :href="selectedPortal">{{ selectedPortal }}</a></h5>
               <b-progress
-                :value="uploadProgress.loaded"
-                :max="uploadProgress.total"
+                :value="transferProgress.loaded"
+                :max="transferProgress.total"
                 size="is-large"
                 type="is-primary"
                 show-value>
+                {{humanFileSize(transferProgress.loaded)}}
               </b-progress>
+              <p>Size: {{humanFileSize(transferProgress.total)}} - Uploading at: {{humanFileSize(transferProgress.speed)}}/sec</p>
             </div>
           </div>
         </div>
@@ -129,14 +130,9 @@ import SkylinkUtil from '@/mixins/skylinkUtil';
 import skynet, { SkynetClient, SkynetUpload } from '@/services/skynet';
 import LinkHistoryItem from '@/services/linkHistory/linkHistoryItem';
 
-@Component({ components: {} })
+@Component
 export default class Home extends mixins(SkylinkUtil) {
     private loading = false;
-
-    private uploadProgress = {
-      loaded: 0,
-      total: 0,
-    };
 
     private fileToUpload: File | null = null;
 
@@ -157,8 +153,9 @@ export default class Home extends mixins(SkylinkUtil) {
     created() {
       window.addEventListener(SkynetClient.SKYNET_UPLOAD_PROGRESS_EVENT, (e: Event) => {
         const uploadStatsEvent = e as CustomEvent;
-        this.uploadProgress.loaded = uploadStatsEvent.detail.loaded;
-        this.uploadProgress.total = uploadStatsEvent.detail.total;
+        this.transferProgress.loaded = uploadStatsEvent.detail.loaded;
+        this.transferProgress.total = uploadStatsEvent.detail.total;
+        this.calculateSpeed();
       });
     }
 
@@ -237,6 +234,13 @@ export default class Home extends mixins(SkylinkUtil) {
 
     resetUpload() {
       this.skynetUpload = null;
+      this.transferProgress = {
+        timeStamp: 0,
+        loaded: 0,
+        total: 0,
+        prevLoaded: 0,
+        speed: 0,
+      };
     }
 }
 </script>

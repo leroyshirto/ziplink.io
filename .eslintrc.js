@@ -14,8 +14,8 @@ module.exports = {
   rules: {
     'no-console': process.env.NODE_ENV === 'production' ? 'error' : 'off',
     'no-debugger': process.env.NODE_ENV === 'production' ? 'error' : 'off',
-    'no-plusplus': [2, { allowForLoopAfterthoughts: true }],
     'no-await-in-loop': 'off',
+    'no-plusplus': 'off',
     'class-methods-use-this': 'off',
     'import/no-extraneous-dependencies': 'off',
     'max-len': 'off',

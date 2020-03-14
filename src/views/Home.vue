@@ -70,6 +70,9 @@
                             :value="item.host">{{ item.host }}</option>
                   </b-select>
                 </b-field>
+                <b-field label="Share Target">
+                  <b-button @click="testWebshareTarget()">Test Share Target</b-button>
+                </b-field>
               </div>
             </div>
           </div>
@@ -232,6 +235,18 @@ export default class Home extends mixins(SkylinkUtil) {
         prevLoaded: 0,
         speed: 0,
       };
+    }
+
+    async testWebshareTarget() {
+      const testFile = new File(['foo'], 'foo.txt', {
+        type: 'text/plain',
+      });
+      const data = new FormData();
+      data.append('file', testFile);
+      const response = await fetch(
+        '/',
+        { method: 'POST', body: data },
+      );
     }
 
     created() {

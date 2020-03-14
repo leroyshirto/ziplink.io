@@ -21,7 +21,7 @@ module.exports = {
       scope: '/',
       start_url: '/',
       share_target: {
-        action: '/#/?upload',
+        action: '/',
         method: 'POST',
         enctype: 'multipart/form-data',
         params: {

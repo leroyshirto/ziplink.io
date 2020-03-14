@@ -64,7 +64,7 @@ export default class Home extends Vue {
 
     await this.$store.dispatch(
       'addItemToHistory',
-      LinkHistoryItem.createForDownload(skylink),
+      LinkHistoryItem.createForDownload(skylink, skynet.defaultPortalUrl),
     );
 
     this.loading = false;

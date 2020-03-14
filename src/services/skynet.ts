@@ -14,7 +14,7 @@ export type SkynetFile = {
 
 export type SkynetUpload = {
   skylink: string;
-  portalUrl: string
+  portalUrl: string;
 }
 
 export class SkynetClient {
@@ -127,7 +127,7 @@ export class SkynetClient {
         );
         return {
           skylink: response.data.skylink,
-          portalUrl: uploadPortalUrl
+          portalUrl: uploadPortalUrl,
         };
       } catch (err) {
         error = err;

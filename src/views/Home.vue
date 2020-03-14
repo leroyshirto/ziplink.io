@@ -33,7 +33,7 @@
       </div>
     </section>
 
-    <section v-if="skylink === ''" class="section has-text-centered">
+    <section v-if="skynetUpload === null" class="section has-text-centered">
       <div class="columns is-centered">
         <div class="column is-one-third">
           <div class="card" v-show="!loading">
@@ -76,21 +76,22 @@
       </div>
     </section>
 
-    <section v-if="skylink !== ''" class="section mt-20">
+    <section v-if="skynetUpload !== null" class="section mt-20">
       <div class="card">
         <div class="card-content">
           <p class="title has-text-centered">
             Here's your link
           </p>
           <p class="subtitle has-text-centered">
-            <router-link :to="{name: 'Download', params: { skylink: skylink}}">
-              {{ getSkylinkUrl(skylink) }}
+            <router-link :to="{name: 'Download', params: { skylink: skynetUpload.skylink}}">
+              {{ getSkylinkUrl(skynetUpload.skylink) }}
             </router-link>
           </p>
+          <p class="has-text-centered">Uploaded through portal {{skynetUpload.portalUrl}}</p>
         </div>
         <footer class="card-footer mt-30">
           <a class="card-footer-item"
-            v-clipboard:copy="getSkylinkUrl(skylink)"
+            v-clipboard:copy="getSkylinkUrl(skynetUpload.skylink)"
             v-clipboard:success="onCopy"
             v-clipboard:error="onError"
           >Copy link</a>
@@ -100,9 +101,22 @@
           >Share link</a>
           <a class="card-footer-item"
              v-else
-            :href="`mailto:?&subject=ziplink.io%20file%20sharing.&body=Hi%20I%20wanted%20to%20share%20this%20file%20with%20you%20${encodeURI(getSkylinkUrl)}`"
+            :href="`mailto:?&subject=ziplink.io%20file%20sharing.&body=Hi%20I%20wanted%20to%20share%20this%20file%20with%20you%20${encodeURI(getSkylinkUrl(skynetUpload.skylink))}`"
           >Share link</a>
         </footer>
+      </div>
+    </section>
+
+    <section v-if="skynetUpload !== null" class="hero has-background-white">
+      <div class="hero-body">
+        <div class="container">
+          <h1 class="title has-text-centered">
+            Upload another file?
+          </h1>
+          <h2 class="subtitle has-text-centered">
+            <b-button @click="resetUpload()">Upload</b-button>
+          </h2>
+        </div>
       </div>
     </section>
   </div>
@@ -112,7 +126,7 @@
 import { Component } from 'vue-property-decorator';
 import { mixins } from 'vue-class-component';
 import SkylinkUtil from '@/mixins/skylinkUtil';
-import skynet, { SkynetClient } from '@/services/skynet';
+import skynet, { SkynetClient, SkynetUpload } from '@/services/skynet';
 import LinkHistoryItem from '@/services/linkHistory/linkHistoryItem';
 
 @Component({ components: {} })
@@ -126,7 +140,7 @@ export default class Home extends mixins(SkylinkUtil) {
 
     private fileToUpload: File | null = null;
 
-    private skylink = '';
+    private skynetUpload: SkynetUpload | null = null;
 
     private selectedPortal: string | null = null;
 
@@ -159,12 +173,11 @@ export default class Home extends mixins(SkylinkUtil) {
 
       try {
         this.loading = true;
-        const response = await skynet.uploadFile(this.fileToUpload, this.selectedPortal);
+        this.skynetUpload = await skynet.uploadFile(this.fileToUpload, this.selectedPortal);
 
-        this.skylink = response.skylink;
         await this.$store.dispatch(
           'addItemToHistory',
-          LinkHistoryItem.createForUpload(this.skylink),
+          LinkHistoryItem.createForUpload(this.skynetUpload),
         );
 
         this.loading = false;
@@ -197,15 +210,22 @@ export default class Home extends mixins(SkylinkUtil) {
     }
 
     doWebShare() {
+      if (this.skynetUpload === null || this.skynetUpload.skylink === '') {
+        throw new Error('Skylink must be set to do webshare');
+      }
       if (navigator.share) {
         navigator.share({
           title: 'ziplink.io',
           text: 'Check out this file',
-          url: this.getSkylinkUrl(this.skylink),
+          url: this.getSkylinkUrl(this.skynetUpload?.skylink),
         })
           .then(() => this.$swal('Link shared'))
           .catch((error: Error) => this.$swal(`Error sharing: ${error}`));
       }
+    }
+
+    resetUpload() {
+      this.skynetUpload = null;
     }
 }
 </script>

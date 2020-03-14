@@ -12,8 +12,7 @@ export type SkynetFile = {
 }
 
 export class SkynetClient {
-  private PORTAL_URL = 'https://skynet.tutemwesi.com';
-  // private PORTAL_URL = 'https://siasky.net';
+  private DEFAULT_PORTAL_URL = 'https://skynet.tutemwesi.com';
 
   private PORTAL_UPLOAD_PATH = 'skynet/skyfile';
 
@@ -23,13 +22,67 @@ export class SkynetClient {
 
   static SKYNET_DOWNLOAD_PROGRESS_EVENT = 'skynet-download-progress';
 
-  async uploadFile(file: File) {
+  get availablePortals() {
+    return [
+      {
+        host: 'https://siasky.net',
+        operator: 'Nebulous',
+        location: 'unknown',
+      },
+      {
+        host: 'https://skydrain.net',
+        operator: 'PixelDrain',
+        location: 'unknown',
+      },
+      {
+        host: 'https://sialoop.net',
+        operator: 'Keops',
+        location: 'unknown',
+      },
+      {
+        host: 'https://siacdn.com',
+        operator: 'Maxint LLC',
+        location: 'unknown',
+      },
+      {
+        host: 'https://skynethub.io',
+        operator: 'jchauan',
+        location: 'unknown',
+      },
+      {
+        host: 'https://skynet.luxor.tech',
+        operator: 'Luxor',
+        location: 'unknown',
+      },
+      {
+        host: 'https://skynet.tutemwesi.com',
+        operator: 'Tutemwesi',
+        location: 'unknown',
+      },
+      {
+        host: 'https://vault.lightspeedhosting.com',
+        operator: 'Lightspeed Hosting',
+        location: 'unknown',
+      },
+      {
+        host: 'https://broken.example.com',
+        operator: 'Known Broken Portal',
+        location: 'unknown',
+      },
+    ];
+  }
+
+  get defaultPortalUrl() {
+    return this.DEFAULT_PORTAL_URL;
+  }
+
+  async uploadFile(file: File, portalUrl: string) {
     const data = new FormData();
     data.append(this.PORTAL_FILE_FIELD_NAME, file);
 
     const uuid = shortid.generate();
     const response = await fetch(
-      `${this.PORTAL_URL}/${this.PORTAL_UPLOAD_PATH}/${uuid}`,
+      `${portalUrl}/${this.PORTAL_UPLOAD_PATH}/${uuid}`,
       { method: 'POST', body: data },
     );
 
@@ -47,11 +100,11 @@ export class SkynetClient {
     return response.json();
   }
 
-  async fetchLink(skylink: string) {
+  async fetchLink(skylink: string, portalUrl: string) {
     const response = await axios.request(
       {
         method: 'get',
-        url: `${this.PORTAL_URL}/${skylink}`,
+        url: `${portalUrl}/${skylink}`,
         headers: { Range: 'bytes=0-0' }, // We only want the response header
         responseType: 'blob', // important
       },
@@ -60,11 +113,11 @@ export class SkynetClient {
     return response.data;
   }
 
-  async downloadFile(skylink: string) {
+  async downloadFile(skylink: string, portalUrl: string) {
     const response = await axios.request(
       {
         method: 'get',
-        url: `${this.PORTAL_URL}/${skylink}`,
+        url: `${portalUrl}/${skylink}`,
         responseType: 'blob', // important
         onDownloadProgress: (p: ProgressEvent) => {
           const eventAwesome = new CustomEvent(SkynetClient.SKYNET_DOWNLOAD_PROGRESS_EVENT, {
@@ -83,7 +136,7 @@ export class SkynetClient {
       throw new Error('Could not get the links meta data');
     }
 
-    // {"filename":"test.html"}
+    // Looks like this {"filename":"test.html"}
     const meta = JSON.parse(response.headers['skynet-file-metadata'] as string);
     const data = await response.data;
 

@@ -24,7 +24,7 @@
                 <b-upload
                   v-model="fileToUpload"
                   drag-drop
-                  @input="onUpload()">
+                  @input="doUpload()">
                   <section class="section">
                     <div class="content has-text-centered">
                       <p>
@@ -38,6 +38,20 @@
                   </section>
                 </b-upload>
               </b-field>
+              <b-field>
+                <b-switch v-model="showAdvanced">
+                  Advanced
+                </b-switch>
+              </b-field>
+              <div v-if="showAdvanced">
+                <b-field label="Portal">
+                  <b-select placeholder="Select a portal" icon="earth"
+                            expanded v-model="selectedPortal">
+                    <option v-for="(item, index) in availablePortals" :key="index"
+                            :value="item.host">{{ item.host }}</option>
+                  </b-select>
+                </b-field>
+              </div>
             </div>
           </div>
         </div>
@@ -91,17 +105,29 @@ export default class Home extends mixins(SkylinkUtil) {
 
     private skylink = '';
 
+    private selectedPortal: string | null = null;
+
+    private showAdvanced = false;
+
+    get availablePortals() {
+      return skynet.availablePortals;
+    }
+
     get hasWebShare() {
       return navigator.canShare;
     }
 
-    async onUpload() {
+    async doUpload() {
       if (this.fileToUpload === null) {
         return;
       }
 
+      if (this.selectedPortal === null) {
+        this.selectedPortal = skynet.defaultPortalUrl;
+      }
+
       this.loading = true;
-      const response = await skynet.uploadFile(this.fileToUpload);
+      const response = await skynet.uploadFile(this.fileToUpload, this.selectedPortal);
 
       this.skylink = response.skylink;
       await this.$store.dispatch(

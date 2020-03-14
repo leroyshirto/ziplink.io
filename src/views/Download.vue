@@ -60,7 +60,7 @@ export default class Home extends Vue {
   }
 
   async downloadFile(skylink: string) {
-    const response = await skynet.downloadFile(skylink);
+    const response = await skynet.downloadFile(skylink, skynet.defaultPortalUrl);
 
     await this.$store.dispatch(
       'addItemToHistory',

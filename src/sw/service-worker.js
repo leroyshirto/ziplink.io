@@ -18,7 +18,7 @@ function serveShareTarget(event) {
   event.waitUntil(async function () {
     // The page sends this message to tell the service worker it's ready to receive the file.
     // eslint-disable-next-line @typescript-eslint/no-use-before-define
-    await nextMessage('share-ready');
+    // await nextMessage('share-ready');
     // eslint-disable-next-line no-restricted-globals
     const client = await self.clients.get(event.resultingClientId);
     const data = await dataPromise;

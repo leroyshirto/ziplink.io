@@ -244,8 +244,11 @@ export default class Home extends mixins(SkylinkUtil) {
       const data = new FormData();
       data.append('file', testFile);
       const response = await fetch(
-        '/',
-        { method: 'POST', body: data },
+        '/?upload',
+        {
+          method: 'POST',
+          body: data,
+        },
       );
     }
 

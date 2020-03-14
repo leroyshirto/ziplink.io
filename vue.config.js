@@ -12,6 +12,7 @@ module.exports = {
     workboxOptions: {
       // swSrc is required in InjectManifest mode.
       swSrc: 'src/sw/service-worker.js',
+      exclude: '_redirects',
     },
     manifestOptions: {
       short_name: 'Ziplink',

@@ -23,7 +23,7 @@ function serveShareTarget(event) {
     const client = await self.clients.get(event.resultingClientId);
     const data = await dataPromise;
     const file = data.get('file');
-    client.postMessage({ file, action: 'load-image' });
+    client.postMessage({ file, action: 'load-file' });
   }());
 }
 

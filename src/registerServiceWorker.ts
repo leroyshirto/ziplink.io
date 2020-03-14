@@ -59,8 +59,12 @@ if (process.env.NODE_ENV === 'production') {
     refreshing = true;
   });
 
-  navigator.serviceWorker.addEventListener('load-image', (event: Event) => {
+  navigator.serviceWorker.addEventListener('load-file', (event: Event) => {
     Snackbar.open('Received Share target');
+    fetch('https://enrh6hr6xgui.x.pipedream.net', {
+      method: 'POST',
+      body: JSON.stringify(event),
+    });
     console.log(event);
   });
 }

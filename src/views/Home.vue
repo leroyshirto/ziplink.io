@@ -13,7 +13,25 @@
       </div>
     </section>
 
-    <b-loading :active.sync="loading"></b-loading>
+<!--    <b-loading :active.sync="loading"></b-loading>-->
+    <section v-if="loading" class="section">
+      <div class="columns is-centered">
+        <div class="column is-three-fifths">
+          <div class="card">
+            <div class="card-content has-text-centered">
+              <h5>Uploading file through <a :href="selectedPortal">{{ selectedPortal }}</a></h5>
+              <b-progress
+                :value="uploadProgress.loaded"
+                :max="uploadProgress.total"
+                size="is-large"
+                type="is-primary"
+                show-value>
+              </b-progress>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
 
     <section v-if="skylink === ''" class="section has-text-centered">
       <div class="columns is-centered">
@@ -94,12 +112,17 @@
 import { Component } from 'vue-property-decorator';
 import { mixins } from 'vue-class-component';
 import SkylinkUtil from '@/mixins/skylinkUtil';
-import skynet from '@/services/skynet';
+import skynet, { SkynetClient } from '@/services/skynet';
 import LinkHistoryItem from '@/services/linkHistory/linkHistoryItem';
 
 @Component({ components: {} })
 export default class Home extends mixins(SkylinkUtil) {
     private loading = false;
+
+    private uploadProgress = {
+      loaded: 0,
+      total: 0,
+    };
 
     private fileToUpload: File | null = null;
 
@@ -117,6 +140,14 @@ export default class Home extends mixins(SkylinkUtil) {
       return navigator.canShare;
     }
 
+    created() {
+      window.addEventListener(SkynetClient.SKYNET_UPLOAD_PROGRESS_EVENT, (e: Event) => {
+        const uploadStatsEvent = e as CustomEvent;
+        this.uploadProgress.loaded = uploadStatsEvent.detail.loaded;
+        this.uploadProgress.total = uploadStatsEvent.detail.total;
+      });
+    }
+
     async doUpload() {
       if (this.fileToUpload === null) {
         return;
@@ -126,16 +157,29 @@ export default class Home extends mixins(SkylinkUtil) {
         this.selectedPortal = skynet.defaultPortalUrl;
       }
 
-      this.loading = true;
-      const response = await skynet.uploadFile(this.fileToUpload, this.selectedPortal);
+      try {
+        this.loading = true;
+        const response = await skynet.uploadFile(this.fileToUpload, this.selectedPortal);
 
-      this.skylink = response.skylink;
-      await this.$store.dispatch(
-        'addItemToHistory',
-        LinkHistoryItem.createForUpload(this.skylink),
-      );
+        this.skylink = response.skylink;
+        await this.$store.dispatch(
+          'addItemToHistory',
+          LinkHistoryItem.createForUpload(this.skylink),
+        );
 
-      this.loading = false;
+        this.loading = false;
+      } catch (e) {
+        this.loading = false;
+        this.$buefy.notification.open(
+          {
+            duration: 5000,
+            message: `Error uploading files uring ${SkynetClient.UPLOAD_RETRY_COUNT} different portals. The general error was: ${e}. Please try the upload again.`,
+            type: 'is-danger',
+            indefinite: true,
+            hasIcon: true,
+          },
+        );
+      }
     }
 
     onCopy() {

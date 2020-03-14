@@ -1,5 +1,6 @@
 import axios from 'axios';
 import shortid from 'short-id';
+import { NotificationProgrammatic as Notification } from 'buefy';
 
 type Meta = {
   filename: string;
@@ -9,6 +10,11 @@ type Meta = {
 export type SkynetFile = {
   meta: Meta;
   data: Blob;
+}
+
+export type SkynetUpload = {
+  skylink: string;
+  portalUrl: string
 }
 
 export class SkynetClient {
@@ -21,6 +27,10 @@ export class SkynetClient {
   private SKYNET_FILE_META_HEADER = 'skynet-file-metadata';
 
   static SKYNET_DOWNLOAD_PROGRESS_EVENT = 'skynet-download-progress';
+
+  static SKYNET_UPLOAD_PROGRESS_EVENT = 'skynet-upload-progress';
+
+  static UPLOAD_RETRY_COUNT = 3; // Try 3 portals before failing
 
   get availablePortals() {
     return [
@@ -76,28 +86,55 @@ export class SkynetClient {
     return this.DEFAULT_PORTAL_URL;
   }
 
-  async uploadFile(file: File, portalUrl: string) {
-    const data = new FormData();
-    data.append(this.PORTAL_FILE_FIELD_NAME, file);
+  async uploadFile(file: File, portalUrl: string, numberOfRetries = SkynetClient.UPLOAD_RETRY_COUNT): Promise<SkynetUpload> {
+    let error;
+    for (let i = 0; i < numberOfRetries; ++i) {
+      try {
+        const data = new FormData();
+        data.append(this.PORTAL_FILE_FIELD_NAME, file);
 
-    const uuid = shortid.generate();
-    const response = await fetch(
-      `${portalUrl}/${this.PORTAL_UPLOAD_PATH}/${uuid}`,
-      { method: 'POST', body: data },
-    );
+        const uuid = shortid.generate();
+        let uploadPortalUrl = portalUrl;
+        if (i !== 0) {
+          // TODO: Better implementation. This could select the same url again.
+          uploadPortalUrl = this.getRandomPortalUrl();
+          Notification.open(
+            {
+              duration: 5000,
+              message: `Upload to ${portalUrl} failed. Trying to upload to ${uploadPortalUrl}`,
+              type: 'is-warning',
+              hasIcon: true,
+            },
+          );
+        }
 
-    // const response = await axios.request(
-    //   {
-    //     method: 'post',
-    //     url: `${this.PORTAL_URL}/${this.PORTAL_UPLOAD_PATH}/${uuid}`,
-    //     data,
-    //     onUploadProgress: (p) => {
-    //       console.log(p);
-    //     },
-    //   },
-    // );
+        const response = await axios.request(
+          {
+            method: 'post',
+            url: `${uploadPortalUrl}/${this.PORTAL_UPLOAD_PATH}/${uuid}`,
+            data,
+            onUploadProgress: (p) => {
+              const uploadProgressEvent = new CustomEvent(
+                SkynetClient.SKYNET_UPLOAD_PROGRESS_EVENT,
+                {
+                  bubbles: true,
+                  detail: p,
+                },
+              );
+              window.dispatchEvent(uploadProgressEvent);
+            },
+          },
+        );
+        return {
+          skylink: response.data.skylink,
+          portalUrl: uploadPortalUrl
+        };
+      } catch (err) {
+        error = err;
+      }
+    }
 
-    return response.json();
+    throw error;
   }
 
   async fetchLink(skylink: string, portalUrl: string) {
@@ -120,11 +157,14 @@ export class SkynetClient {
         url: `${portalUrl}/${skylink}`,
         responseType: 'blob', // important
         onDownloadProgress: (p: ProgressEvent) => {
-          const eventAwesome = new CustomEvent(SkynetClient.SKYNET_DOWNLOAD_PROGRESS_EVENT, {
-            bubbles: true,
-            detail: p,
-          });
-          window.dispatchEvent(eventAwesome);
+          const downloadProgressEvent = new CustomEvent(
+            SkynetClient.SKYNET_DOWNLOAD_PROGRESS_EVENT,
+            {
+              bubbles: true,
+              detail: p,
+            },
+          );
+          window.dispatchEvent(downloadProgressEvent);
         },
       },
     );
@@ -141,6 +181,11 @@ export class SkynetClient {
     const data = await response.data;
 
     return { meta, data };
+  }
+
+  private getRandomPortalUrl() {
+    const portal = this.availablePortals[Math.floor(Math.random() * this.availablePortals.length)];
+    return portal.host;
   }
 }
 

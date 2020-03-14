@@ -150,15 +150,6 @@ export default class Home extends mixins(SkylinkUtil) {
       return navigator.canShare;
     }
 
-    created() {
-      window.addEventListener(SkynetClient.SKYNET_UPLOAD_PROGRESS_EVENT, (e: Event) => {
-        const uploadStatsEvent = e as CustomEvent;
-        this.transferProgress.loaded = uploadStatsEvent.detail.loaded;
-        this.transferProgress.total = uploadStatsEvent.detail.total;
-        this.calculateSpeed();
-      });
-    }
-
     async doUpload() {
       if (this.fileToUpload === null) {
         return;
@@ -241,6 +232,23 @@ export default class Home extends mixins(SkylinkUtil) {
         prevLoaded: 0,
         speed: 0,
       };
+    }
+
+    created() {
+      window.addEventListener(SkynetClient.SKYNET_UPLOAD_PROGRESS_EVENT, (e: Event) => {
+        const uploadStatsEvent = e as CustomEvent;
+        this.transferProgress.loaded = uploadStatsEvent.detail.loaded;
+        this.transferProgress.total = uploadStatsEvent.detail.total;
+        this.calculateSpeed();
+      });
+
+      window.addEventListener('ziplink-webshare', (e: Event) => {
+        const webshareUploadEvent = e as CustomEvent;
+        if (webshareUploadEvent.detail.file !== null) {
+          this.fileToUpload = webshareUploadEvent.detail.file;
+          this.doUpload();
+        }
+      });
     }
 }
 </script>

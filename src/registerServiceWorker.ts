@@ -59,12 +59,15 @@ if (process.env.NODE_ENV === 'production') {
     refreshing = true;
   });
 
-  navigator.serviceWorker.addEventListener('load-file', (event: Event) => {
+  navigator.serviceWorker.addEventListener('message', (event: any) => {
     Snackbar.open('Received Share target');
-    fetch('https://enrh6hr6xgui.x.pipedream.net', {
-      method: 'POST',
-      body: JSON.stringify(event),
-    });
-    console.log(event);
+    if (event.data.action === 'load-file') {
+      const webShareUploadEvent = new CustomEvent('ziplink-webshare',
+        {
+          bubbles: true,
+          detail: { file: event.data.file },
+        });
+      window.dispatchEvent(webShareUploadEvent);
+    }
   });
 }

@@ -56,9 +56,12 @@ self.addEventListener('message', (msg) => {
 self.addEventListener('fetch', (event) => {
   const url = new URL(event.request.url);
 
+  // Don't care about other-origin URLs
+  if (url.origin !== location.origin) return;
+
   if (
-    url.origin === location.origin
-    && url.pathname === '/?upload'
+    url.pathname === '/'
+    && url.searchParams.has('upload')
     && event.request.method === 'POST'
   ) {
     serveShareTarget(event);

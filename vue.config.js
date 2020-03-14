@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/camelcase */
 
 module.exports = {
+  productionSourceMap: false,
   chainWebpack: (config) => config.optimization.minimize(false),
   pwa: {
     name: 'Ziplink.io',

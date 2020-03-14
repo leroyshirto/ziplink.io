@@ -48,7 +48,12 @@ export default class Home extends Vue {
     const { skylink } = this.$route.params;
     if (skylink === '') {
       // TODO: handle the unhappy case if we have no link
-      this.$swal('Cloud not find skylink');
+      this.$buefy.notification.open({
+        message: 'Skylink must be provided in the uri',
+        type: 'is-danger',
+        hasIcon: true,
+        indefinite: true,
+      });
     }
 
     window.addEventListener(SkynetClient.SKYNET_DOWNLOAD_PROGRESS_EVENT, (e: Event) => {

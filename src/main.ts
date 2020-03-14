@@ -3,7 +3,6 @@ import 'mutationobserver-shim';
 import Vue from 'vue';
 import './plugins/vue-buefy';
 import './plugins/vue-clipboard';
-import './plugins/vue-sweetalert';
 import './plugins/vue-moment';
 import App from './App.vue';
 import './registerServiceWorker';

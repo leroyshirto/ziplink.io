@@ -196,22 +196,26 @@ export default class Home extends mixins(SkylinkUtil) {
     }
 
     onCopy() {
-      this.$swal({
-        position: 'top-end',
-        icon: 'success',
-        title: 'Copied to clipboard',
-        showConfirmButton: false,
-        timer: 1500,
-      });
+      this.$buefy.notification.open(
+        {
+          message: 'Copied to clipboard',
+          type: 'is-info',
+        },
+      );
     }
 
     onError() {
-      this.$swal('Error Copying data');
+      this.$buefy.notification.open(
+        {
+          message: 'Error Copying data',
+          type: 'is-danger',
+        },
+      );
     }
 
     doWebShare() {
       if (this.skynetUpload === null || this.skynetUpload.skylink === '') {
-        throw new Error('Skylink must be set to do webshare');
+        throw new Error('Skylink must be set to do web share');
       }
       if (navigator.share) {
         navigator.share({
@@ -219,8 +223,15 @@ export default class Home extends mixins(SkylinkUtil) {
           text: 'Check out this file',
           url: this.getSkylinkUrl(this.skynetUpload?.skylink),
         })
-          .then(() => this.$swal('Link shared'))
-          .catch((error: Error) => this.$swal(`Error sharing: ${error}`));
+          .then(() => this.$buefy.notification.open({
+            message: 'Link shared',
+            type: 'is-info',
+          }))
+          .catch((error: Error) => this.$buefy.notification.open({
+            message: `Error sharing: ${error}`,
+            type: 'is-danger',
+            hasIcon: true,
+          }));
       }
     }
 

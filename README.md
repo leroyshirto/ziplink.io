@@ -6,9 +6,11 @@ The ambition is to leverage new browser features and create an intuitive file sh
 
 Goals
 - [x] Build a pwa
+- [x] Progress bars for upload / download
 - [x] Implement Web share API (Share skylinks to native apps)
 - [ ] Implement Web share targets (Allow native apps to share files to ziplink)
-- [ ] Client side failover on portal upload / download failure.
+- [x] Client side failover on portal upload failure.
+- [ ] Client side failover on portal download failure.
 - [x] Keep track of previously created links
 
 Stretch Goals

@@ -20,7 +20,7 @@ function serveShareTarget(event) {
     // eslint-disable-next-line @typescript-eslint/no-use-before-define
     // await nextMessage('share-ready');
     // eslint-disable-next-line no-restricted-globals
-    const client = await self.clients.get(event.resultingClientId);
+    const client = await self.clients.get(event.clientId);
     const data = await dataPromise;
     const file = data.get('file');
     client.postMessage({ file, action: 'load-file' });
@@ -36,11 +36,12 @@ const nextMessageResolveMap = {};
  */
 function nextMessage(dataVal) {
   return new Promise((resolve) => {
-    if (!nextMessageResolveMap.has(dataVal)) {
-      nextMessageResolveMap.set(dataVal, []);
+    // eslint-disable-next-line no-prototype-builtins
+    if (!nextMessageResolveMap.hasOwnProperty(dataVal)) {
+      nextMessageResolveMap[dataVal] = [];
     }
     // eslint-disable-next-line no-unused-expressions
-    nextMessageResolveMap.get(dataVal)?.push(resolve);
+    nextMessageResolveMap[dataVal]?.push(resolve);
   });
 }
 

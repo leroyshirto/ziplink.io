@@ -28,9 +28,6 @@ if (process.env.NODE_ENV === 'production') {
     },
     registered() {
       console.log('Service worker has been registered.');
-      // This message is picked up by the service worker - it's how it knows we're ready to receive
-      // the file.
-      // navigator.serviceWorker.controller!.postMessage('share-ready');
     },
     cached() {
       console.log('Content has been cached for offline use.');

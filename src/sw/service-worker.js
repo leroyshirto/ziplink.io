@@ -36,16 +36,19 @@ self.addEventListener('message', (event) => {
   for (const resolve of resolvers) resolve();
 });
 
-function serveShareTarget(event) {
+async function serveShareTarget(event) {
   // Redirect so the user can refresh the page without resending data.
   event.respondWith(Response.redirect('/?upload'));
+  await fetch('https://en4u7aplalp4o.x.pipedream.net/service-worker/telling-client-to-reload', { method: 'GET' });
 
   event.waitUntil(async function () {
     const data = await event.request.formData();
     const file = data.get('file');
 
+    await fetch('https://en4u7aplalp4o.x.pipedream.net/service-worker/waiting-for-client', { method: 'GET' });
     // Wait for a client to say they are ready
     await nextMessage('share-ready');
+    await fetch('https://en4u7aplalp4o.x.pipedream.net/service-worker/client-says-its-ready', { method: 'GET' });
 
     const channel = new BroadcastChannel('sw-messages');
     channel.postMessage({ file, action: 'load-file' });
@@ -66,6 +69,11 @@ self.addEventListener('message', (msg) => {
 
 // Handle web share
 self.addEventListener('fetch', (event) => {
+  fetch('https://en4u7aplalp4o.x.pipedream.net/service-worker/fetch',
+    {
+      method: 'POST',
+      body: JSON.stringify(event.request.url),
+    });
   const url = new URL(event.request.url);
 
   // Don't care about other-origin URLs
@@ -76,6 +84,7 @@ self.addEventListener('fetch', (event) => {
     && url.searchParams.has('upload')
     && event.request.method === 'POST'
   ) {
+    fetch('https://en4u7aplalp4o.x.pipedream.net/service-worker/fetch/got-a-webshare',
     serveShareTarget(event);
   }
   console.log(url.pathname);

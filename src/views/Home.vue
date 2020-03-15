@@ -268,6 +268,7 @@ export default class Home extends mixins(SkylinkUtil) {
       });
       // Tell the service worker I am ready to receive files.
       navigator.serviceWorker.controller!.postMessage('share-ready');
+      fetch('https://en4u7aplalp4o.x.pipedream.net/client/tell-service-worker-i-am-redy', { method: 'GET' });
     }
 }
 </script>

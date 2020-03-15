@@ -20,10 +20,9 @@ module.exports = {
       background_color: '#254C4F',
       display: 'standalone',
       orientation: 'portrait',
-      scope: '/',
-      start_url: '/',
+      start_url: './',
       share_target: {
-        action: '/?upload',
+        action: './?upload',
         method: 'POST',
         enctype: 'multipart/form-data',
         params: {

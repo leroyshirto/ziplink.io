@@ -260,13 +260,12 @@ export default class Home extends mixins(SkylinkUtil) {
         this.calculateSpeed();
       });
 
-      navigator.serviceWorker.onmessage = (event) => {
-        if (event.data.action === 'load-file') {
-          this.$buefy.snackbar.open('Received Share target');
-          this.fileToUpload = event.data.file;
-          this.doUpload();
-        }
-      };
+      const channel = new BroadcastChannel('sw-messages');
+      channel.addEventListener('message', (event) => {
+        this.$buefy.snackbar.open('Received Share target');
+        this.fileToUpload = event.data.file;
+        this.doUpload();
+      });
     }
 }
 </script>

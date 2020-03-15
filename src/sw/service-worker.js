@@ -11,13 +11,14 @@ workbox.precaching.precacheAndRoute(self.__precacheManifest, {});
 // Utils
 function serveShareTarget(event) {
   // Redirect so the user can refresh the page without resending data.
-  event.respondWith(Response.redirect('./'));
+  event.respondWith(Response.redirect('/?upload'));
 
   event.waitUntil(async function () {
     const data = await event.request.formData();
-    const client = await self.clients.get(event.clientId);
     const file = data.get('file');
-    client.postMessage({ file, action: 'load-file' });
+
+    const channel = new BroadcastChannel('sw-messages');
+    channel.postMessage({ file, action: 'load-file' });
   }());
 }
 

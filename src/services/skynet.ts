@@ -40,38 +40,8 @@ export class SkynetClient {
         location: 'unknown',
       },
       {
-        host: 'https://skydrain.net',
-        operator: 'PixelDrain',
-        location: 'unknown',
-      },
-      {
-        host: 'https://sialoop.net',
-        operator: 'Keops',
-        location: 'unknown',
-      },
-      {
-        host: 'https://siacdn.com',
-        operator: 'Maxint LLC',
-        location: 'unknown',
-      },
-      {
-        host: 'https://skynethub.io',
-        operator: 'jchauan',
-        location: 'unknown',
-      },
-      {
-        host: 'https://skynet.luxor.tech',
-        operator: 'Luxor',
-        location: 'unknown',
-      },
-      {
         host: 'https://skynet.tutemwesi.com',
         operator: 'Tutemwesi',
-        location: 'unknown',
-      },
-      {
-        host: 'https://vault.lightspeedhosting.com',
-        operator: 'Lightspeed Hosting',
         location: 'unknown',
       },
       {

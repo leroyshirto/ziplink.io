@@ -243,7 +243,7 @@ export default class Home extends mixins(SkylinkUtil) {
       });
       const data = new FormData();
       data.append('file', testFile);
-      const response = await fetch(
+      await fetch(
         '/?upload',
         {
           method: 'POST',
@@ -260,13 +260,13 @@ export default class Home extends mixins(SkylinkUtil) {
         this.calculateSpeed();
       });
 
-      window.addEventListener('ziplink-webshare', (e: Event) => {
-        const webshareUploadEvent = e as CustomEvent;
-        if (webshareUploadEvent.detail.file !== null) {
-          this.fileToUpload = webshareUploadEvent.detail.file;
+      navigator.serviceWorker.onmessage = (event) => {
+        if (event.data.action === 'load-file') {
+          this.$buefy.snackbar.open('Received Share target');
+          this.fileToUpload = event.data.file;
           this.doUpload();
         }
-      });
+      };
     }
 }
 </script>

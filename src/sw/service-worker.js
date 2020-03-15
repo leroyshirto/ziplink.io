@@ -10,41 +10,21 @@ workbox.precaching.precacheAndRoute(self.__precacheManifest, {});
 
 // Utils
 function serveShareTarget(event) {
-  const dataPromise = event.request.formData();
-
   // Redirect so the user can refresh the page without resending data.
-  event.respondWith(Response.redirect('/?upload'));
+  event.respondWith(Response.redirect('./'));
 
   event.waitUntil(async function () {
-    // The page sends this message to tell the service worker it's ready to receive the file.
-    // eslint-disable-next-line @typescript-eslint/no-use-before-define
-    // await nextMessage('share-ready');
-    // eslint-disable-next-line no-restricted-globals
+    const data = await event.request.formData();
     const client = await self.clients.get(event.clientId);
-    const data = await dataPromise;
     const file = data.get('file');
     client.postMessage({ file, action: 'load-file' });
   }());
 }
 
-const nextMessageResolveMap = {};
-
-/**
- * Wait on a message with a particular event.data value.
- *
- * @param dataVal The event.data value.
- */
-function nextMessage(dataVal) {
-  return new Promise((resolve) => {
-    // eslint-disable-next-line no-prototype-builtins
-    if (!nextMessageResolveMap.hasOwnProperty(dataVal)) {
-      nextMessageResolveMap[dataVal] = [];
-    }
-    // eslint-disable-next-line no-unused-expressions
-    nextMessageResolveMap[dataVal]?.push(resolve);
-  });
-}
-
+self.addEventListener('activate', () => {
+  // eslint-disable-next-line no-undef
+  self.clients.claim();
+});
 
 // Install new service worker when ok then reload the page
 self.addEventListener('message', (msg) => {

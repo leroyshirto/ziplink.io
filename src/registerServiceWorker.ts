@@ -58,16 +58,4 @@ if (process.env.NODE_ENV === 'production') {
     window.location.reload();
     refreshing = true;
   });
-
-  navigator.serviceWorker.addEventListener('message', (event: any) => {
-    Snackbar.open('Received Share target');
-    if (event.data.action === 'load-file') {
-      const webShareUploadEvent = new CustomEvent('ziplink-webshare',
-        {
-          bubbles: true,
-          detail: { file: event.data.file },
-        });
-      window.dispatchEvent(webShareUploadEvent);
-    }
-  });
 }

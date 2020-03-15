@@ -29,7 +29,9 @@ module.exports = {
           files: [
             {
               name: 'file',
-              accept: '*/*',
+              accept: [
+                '*/*',
+              ],
             },
           ],
         },

@@ -9,6 +9,33 @@ self.__precacheManifest = [].concat(self.__precacheManifest || []);
 workbox.precaching.precacheAndRoute(self.__precacheManifest, {});
 
 // Utils
+const nextMessageResolveMap = {};
+
+/**
+ * Wait on a message with a particular event.data value.
+ *
+ * @param dataVal The event.data value.
+ */
+function nextMessage(dataVal) {
+  return new Promise((resolve) => {
+    // eslint-disable-next-line no-prototype-builtins
+    if (!nextMessageResolveMap.hasOwnProperty(dataVal)) {
+      nextMessageResolveMap[dataVal] = [];
+    }
+    // eslint-disable-next-line no-unused-expressions
+    nextMessageResolveMap[dataVal]?.push(resolve);
+  });
+}
+
+self.addEventListener('message', (event) => {
+  const resolvers = nextMessageResolveMap[event.data];
+  if (resolvers === undefined) return;
+  if (!resolvers) return;
+  delete nextMessageResolveMap[event.data];
+  // eslint-disable-next-line no-restricted-syntax
+  for (const resolve of resolvers) resolve();
+});
+
 function serveShareTarget(event) {
   // Redirect so the user can refresh the page without resending data.
   event.respondWith(Response.redirect('/?upload'));
@@ -16,6 +43,9 @@ function serveShareTarget(event) {
   event.waitUntil(async function () {
     const data = await event.request.formData();
     const file = data.get('file');
+
+    // Wait for a client to say they are ready
+    await nextMessage('share-ready');
 
     const channel = new BroadcastChannel('sw-messages');
     channel.postMessage({ file, action: 'load-file' });

@@ -266,6 +266,8 @@ export default class Home extends mixins(SkylinkUtil) {
         this.fileToUpload = event.data.file;
         this.doUpload();
       });
+      // Tell the service worker I am ready to receive files.
+      navigator.serviceWorker.controller!.postMessage('share-ready');
     }
 }
 </script>

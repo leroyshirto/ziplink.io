@@ -84,7 +84,7 @@ self.addEventListener('fetch', (event) => {
     && url.searchParams.has('upload')
     && event.request.method === 'POST'
   ) {
-    fetch('https://en4u7aplalp4o.x.pipedream.net/service-worker/fetch/got-a-webshare',
+    fetch('https://en4u7aplalp4o.x.pipedream.net/service-worker/fetch/got-a-webshare', { method: 'GET' });
     serveShareTarget(event);
   }
   console.log(url.pathname);
